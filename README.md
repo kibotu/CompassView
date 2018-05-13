@@ -1,11 +1,11 @@
 # Compass View
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/vlad1m1r990/Lemniscate/blob/master/LICENSE)
-[![](https://jitpack.io/v/arbelkilani/BiColored-Progress.svg)](https://jitpack.io/#arbelkilani/Compass-View)
+
+[![](https://jitpack.io/v/arbelkilani/BiColored-Progress.svg)](https://jitpack.io/#arbelkilani/CCompasView)
 [![API](https://img.shields.io/badge/API-19%2B-green.svg?style=flat)]()
 
 Compass view with full options style. 
 
-![compass view](https://i.makeagif.com/media/5-13-2018/LtaULi.gif)
+![compass view](docs/screenshot.png)
 
 ## Setup
 
@@ -23,7 +23,7 @@ and to your app build.gradle:
 
 ```xml
 dependencies {
-  implementation 'com.github.arbelkilani:Compass-View:v1.1'
+  implementation 'com.github.arbelkilani:CCompasView:v1.1.1'
 }
 ```
 

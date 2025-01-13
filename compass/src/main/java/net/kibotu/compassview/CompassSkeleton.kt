@@ -15,16 +15,16 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 internal class CompassSkeleton : RelativeLayout {
-    private var mWidth = 0
-    private var mCenterX = 0
-    private var mCenterY = 0
+    private var compassWidth = 0
+    private var centerX = 0
+    private var centerY = 0
 
-    private var mDegreesColor = DEGREES_COLOR
-    private var mShowOrientationLabel = SHOW_ORIENTATION_LABEL
-    private var mDegreesStep = DEFAULT_DEGREES_STEP
-    private var mOrientationLabelsColor = DEFAULT_ORIENTATION_LABELS_COLOR
-    private var mShowBorder = DEFAULT_SHOW_BORDER
-    private var mBorderColor = DEFAULT_BORDER_COLOR
+    private var degreesColor = DEGREES_COLOR
+    private var showOrientationLabel = SHOW_ORIENTATION_LABEL
+    private var degreesStep = DEFAULT_DEGREES_STEP
+    private var orientationLabelsColor = DEFAULT_ORIENTATION_LABELS_COLOR
+    private var showBorder = DEFAULT_SHOW_BORDER
+    private var borderColor = DEFAULT_BORDER_COLOR
 
     /**
      * @param context
@@ -73,10 +73,10 @@ internal class CompassSkeleton : RelativeLayout {
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
-        mWidth = if (height > width) width else height
+        compassWidth = if (height > width) width else height
 
-        mCenterX = mWidth / 2
-        mCenterY = mWidth / 2
+        centerX = compassWidth / 2
+        centerY = compassWidth / 2
 
         drawCompassSkeleton(canvas)
         drawOuterCircle(canvas)
@@ -86,18 +86,18 @@ internal class CompassSkeleton : RelativeLayout {
      * @param canvas
      */
     private fun drawOuterCircle(canvas: Canvas) {
-        val mStrokeWidth = (mWidth * 0.01f).toInt()
+        val strokeWidth = (compassWidth * 0.01f).toInt()
         val paint = Paint()
         paint.style = Paint.Style.STROKE
-        paint.strokeWidth = mStrokeWidth.toFloat()
-        paint.setColor(mBorderColor)
+        paint.strokeWidth = strokeWidth.toFloat()
+        paint.setColor(borderColor)
 
-        val radius = ((mWidth / 2) - mStrokeWidth / 2).toFloat()
+        val radius = ((compassWidth / 2) - strokeWidth / 2).toFloat()
 
         val rectF = RectF()
-        rectF.set(mCenterX - radius, mCenterY - radius, mCenterX + radius, mCenterY + radius)
+        rectF.set(centerX - radius, centerY - radius, centerX + radius, centerY + radius)
 
-        if (mShowBorder) canvas.drawArc(rectF, 0f, 360f, false, paint)
+        if (showBorder) canvas.drawArc(rectF, 0f, 360f, false, paint)
     }
 
     /**
@@ -109,12 +109,12 @@ internal class CompassSkeleton : RelativeLayout {
         paint.strokeCap = Paint.Cap.ROUND
 
         val textPaint = TextPaint()
-        textPaint.textSize = mWidth * 0.06f
-        textPaint.setColor(mOrientationLabelsColor)
+        textPaint.textSize = compassWidth * 0.06f
+        textPaint.setColor(orientationLabelsColor)
 
         val rect = Rect()
 
-        val rPadded = mCenterX - (mWidth * 0.01f).toInt()
+        val rPadded = centerX - (compassWidth * 0.01f).toInt()
 
         var i = 0
         while (i <= 360) {
@@ -122,28 +122,28 @@ internal class CompassSkeleton : RelativeLayout {
             var rText: Int
 
             if ((i % 90) == 0) {
-                rEnd = mCenterX - (mWidth * 0.08f).toInt()
-                rText = mCenterX - (mWidth * 0.15f).toInt()
-                paint.setColor(mDegreesColor)
-                paint.strokeWidth = mWidth * 0.02f
+                rEnd = centerX - (compassWidth * 0.08f).toInt()
+                rText = centerX - (compassWidth * 0.15f).toInt()
+                paint.setColor(degreesColor)
+                paint.strokeWidth = compassWidth * 0.02f
 
                 showOrientationLabel(canvas, textPaint, rect, i, rText)
             } else if ((i % 45) == 0) {
-                rEnd = mCenterX - (mWidth * 0.06f).toInt()
-                paint.setColor(mDegreesColor)
-                paint.strokeWidth = mWidth * 0.02f
+                rEnd = centerX - (compassWidth * 0.06f).toInt()
+                paint.setColor(degreesColor)
+                paint.strokeWidth = compassWidth * 0.02f
             } else {
-                rEnd = mCenterX - (mWidth * 0.04f).toInt()
-                paint.setColor(mDegreesColor)
-                paint.strokeWidth = mWidth * 0.015f
+                rEnd = centerX - (compassWidth * 0.04f).toInt()
+                paint.setColor(degreesColor)
+                paint.strokeWidth = compassWidth * 0.015f
                 paint.setAlpha(DEFAULT_MINIMIZED_ALPHA)
             }
 
-            val startX = (mCenterX + rPadded * cos(Math.toRadians(i.toDouble()))).toInt()
-            val startY = (mCenterX - rPadded * sin(Math.toRadians(i.toDouble()))).toInt()
+            val startX = (centerX + rPadded * cos(Math.toRadians(i.toDouble()))).toInt()
+            val startY = (centerX - rPadded * sin(Math.toRadians(i.toDouble()))).toInt()
 
-            val stopX = (mCenterX + rEnd * cos(Math.toRadians(i.toDouble()))).toInt()
-            val stopY = (mCenterX - rEnd * sin(Math.toRadians(i.toDouble()))).toInt()
+            val stopX = (centerX + rEnd * cos(Math.toRadians(i.toDouble()))).toInt()
+            val stopY = (centerX - rEnd * sin(Math.toRadians(i.toDouble()))).toInt()
 
 
             canvas.drawLine(
@@ -154,7 +154,7 @@ internal class CompassSkeleton : RelativeLayout {
                 paint
             )
 
-            i = i + mDegreesStep
+            i = i + degreesStep
         }
     }
 
@@ -172,9 +172,9 @@ internal class CompassSkeleton : RelativeLayout {
         i: Int,
         rText: Int
     ) {
-        if (mShowOrientationLabel) {
-            val textX = (mCenterX + rText * cos(Math.toRadians(i.toDouble()))).toInt()
-            val textY = (mCenterX - rText * sin(Math.toRadians(i.toDouble()))).toInt()
+        if (showOrientationLabel) {
+            val textX = (centerX + rText * cos(Math.toRadians(i.toDouble()))).toInt()
+            val textY = (centerX - rText * sin(Math.toRadians(i.toDouble()))).toInt()
 
             var direction = EAST_INDEX
             if (i == 0) {
@@ -201,7 +201,7 @@ internal class CompassSkeleton : RelativeLayout {
      * @param degreesColor
      */
     fun setDegreesColor(degreesColor: Int) {
-        mDegreesColor = degreesColor
+        this@CompassSkeleton.degreesColor = degreesColor
         invalidate()
     }
 
@@ -209,7 +209,7 @@ internal class CompassSkeleton : RelativeLayout {
      * @param showOrientationLabel
      */
     fun setShowOrientationLabel(showOrientationLabel: Boolean) {
-        mShowOrientationLabel = showOrientationLabel
+        this@CompassSkeleton.showOrientationLabel = showOrientationLabel
         invalidate()
     }
 
@@ -222,7 +222,7 @@ internal class CompassSkeleton : RelativeLayout {
         if (degreesStep > 360 || degreesStep < 0 || 360 % degreesStep != 0) {
             throw Exception("Degree step is invalid")
         }
-        mDegreesStep = degreesStep
+        this@CompassSkeleton.degreesStep = degreesStep
         invalidate()
     }
 
@@ -230,7 +230,7 @@ internal class CompassSkeleton : RelativeLayout {
      * @param orientationLabelsColor
      */
     fun setOrientationLabelsColor(orientationLabelsColor: Int) {
-        mOrientationLabelsColor = orientationLabelsColor
+        this@CompassSkeleton.orientationLabelsColor = orientationLabelsColor
         invalidate()
     }
 
@@ -238,7 +238,7 @@ internal class CompassSkeleton : RelativeLayout {
      * @param showBorder
      */
     fun setShowBorder(showBorder: Boolean) {
-        mShowBorder = showBorder
+        this@CompassSkeleton.showBorder = showBorder
         invalidate()
     }
 
@@ -246,7 +246,7 @@ internal class CompassSkeleton : RelativeLayout {
      * @param borderColor
      */
     fun setBorderColor(borderColor: Int) {
-        mBorderColor = borderColor
+        this@CompassSkeleton.borderColor = borderColor
         invalidate()
     }
 

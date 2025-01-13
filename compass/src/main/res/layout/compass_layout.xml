@@ -10,7 +10,7 @@
         android:src="@drawable/ic_needle"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_centerInParent="true"/>
+        android:layout_centerInParent="true" />
 
     <RelativeLayout
         android:id="@+id/data_layout"
@@ -23,7 +23,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:textColor="@android:color/black"/>
+            android:textColor="@android:color/black" />
 
     </RelativeLayout>
 

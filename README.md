@@ -42,7 +42,7 @@ dependencies {
 ## Usage
 
 ```xml
-<edu.arbelkilani.compass.Compass
+<net.kibotu.compassview.Compass
     android:id="@+id/compass_1"
     android:layout_width="200dp"
     android:layout_height="200dp"

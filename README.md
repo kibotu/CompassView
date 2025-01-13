@@ -4,8 +4,7 @@
 
 Compass view with full options style. 
 
-![compass view](docs/screenshot.png)
-
+![compass view](docs/demo.gif)
 
 # How to install
 

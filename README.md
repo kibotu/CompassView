@@ -1,29 +1,41 @@
 # Compass View
 
-[![](https://jitpack.io/v/arbelkilani/BiColored-Progress.svg)](https://jitpack.io/#arbelkilani/CCompasView)
-[![API](https://img.shields.io/badge/API-19%2B-green.svg?style=flat)]()
+[![Maven Central Version](https://img.shields.io/maven-central/v/net.kibotu/CompassView)](https://central.sonatype.com/artifact/net.kibotu/CompassView) [![](https://jitpack.io/v/kibotu/CompassView.svg)](https://jitpack.io/#kibotu/CompassView) [![Android CI](https://github.com/kibotu/CompassView/actions/workflows/android.yml/badge.svg)](https://github.com/kibotu/CompassView/actions/workflows/android.yml) [![API](https://img.shields.io/badge/Min%20API-21%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=21) [![API](https://img.shields.io/badge/Target%20API-35%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=35) [![API](https://img.shields.io/badge/Java-17-brightgreen.svg?style=flat)](https://www.oracle.com/java/technologies/javase/17all-relnotes.html) [![Gradle Version](https://img.shields.io/badge/gradle-8.11.1-green.svg)](https://docs.gradle.org/current/release-notes) [![Kotlin](https://img.shields.io/badge/kotlin-2.1.0-green.svg)](https://kotlinlang.org/)
 
 Compass view with full options style. 
 
 ![compass view](docs/screenshot.png)
 
-## Setup
 
-Add to your module's build.gradle:
+# How to install
 
-```xml
+## MavenCentral
+
+```groovy 
 allprojects {
-        repositories {
-            ...
-            maven { url 'https://jitpack.io' }
-        }
+    repositories {
+        mavenCentral()
     }
-```
-and to your app build.gradle:
+}
 
-```xml
 dependencies {
-  implementation 'com.github.arbelkilani:CCompasView:v1.1.1'
+    implementation 'net.kibotu:CompassView:{latest-version}'
+}
+
+```
+
+## Jitpack
+
+```groovy
+allprojects {
+	repositories {
+		...
+		maven { url 'https://jitpack.io' }
+	}
+}
+
+dependencies {
+	implementation 'com.github.kibotu:CompassView:{latest-version}'
 }
 ```
 
@@ -86,7 +98,7 @@ compass.setListener(new CompassListener() {
 
 ## License
 
-    Copyright 2018 Belkilani Ahmed Radhouane
+    Copyright 2018 Belkilani Ahmed Radhouane, Jan Rabe 2025
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.

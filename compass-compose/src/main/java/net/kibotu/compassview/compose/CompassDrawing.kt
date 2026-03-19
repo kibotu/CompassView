@@ -1,15 +1,41 @@
 package net.kibotu.compassview.compose
 
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
 import kotlin.math.cos
 import kotlin.math.sin
 
-internal fun DrawScope.drawCompassSkeleton(
+@Composable
+internal fun CompassSkeleton(
+    modifier: Modifier = Modifier,
+    degreeColor: Color,
+    degreesStep: Int,
+    showOrientationLabels: Boolean,
+    orientationLabelsColor: Color,
+    showBorder: Boolean,
+    borderColor: Color
+) {
+    Canvas(modifier = modifier.fillMaxSize()) {
+        drawCompassSkeleton(
+            degreeColor = degreeColor,
+            degreesStep = degreesStep,
+            showOrientationLabels = showOrientationLabels,
+            orientationLabelsColor = orientationLabelsColor,
+            showBorder = showBorder,
+            borderColor = borderColor
+        )
+    }
+}
+
+internal fun androidx.compose.ui.graphics.drawscope.DrawScope.drawCompassSkeleton(
     degreeColor: Color,
     degreesStep: Int,
     showOrientationLabels: Boolean,
@@ -21,7 +47,6 @@ internal fun DrawScope.drawCompassSkeleton(
     val centerX = compassWidth / 2
     val centerY = compassWidth / 2
     
-    // Draw compass degrees
     val rPadded = centerX - (compassWidth * 0.01f)
     
     var i = 0
@@ -64,13 +89,13 @@ internal fun DrawScope.drawCompassSkeleton(
             color = degreeColor.copy(alpha = alpha / 255f),
             start = Offset(startX, startY),
             end = Offset(stopX, stopY),
-            strokeWidth = strokeWidth
+            strokeWidth = strokeWidth,
+            cap = StrokeCap.Round
         )
         
         i += degreesStep
     }
     
-    // Draw border
     if (showBorder) {
         val strokeWidth = (compassWidth * 0.01f)
         val radius = (compassWidth / 2) - strokeWidth / 2
@@ -84,7 +109,7 @@ internal fun DrawScope.drawCompassSkeleton(
     }
 }
 
-private fun DrawScope.drawOrientationLabel(
+private fun androidx.compose.ui.graphics.drawscope.DrawScope.drawOrientationLabel(
     degree: Int,
     rText: Float,
     centerX: Float,

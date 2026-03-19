@@ -37,7 +37,13 @@ class Compass : RelativeLayout, SensorEventListener {
     private var orientationLabelsColor = 0
 
     private var degreeValueColor = 0
-    private var showDegreeValue = false
+    private var _showDegreeValue = false
+    var showDegreeValue: Boolean
+        get() = _showDegreeValue
+        set(value) {
+            _showDegreeValue = value
+            degreeTextView?.isVisible = value
+        }
 
     private var degreesStep = 0
 

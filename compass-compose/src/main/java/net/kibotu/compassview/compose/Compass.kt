@@ -3,22 +3,21 @@ package net.kibotu.compassview.compose
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -44,15 +43,14 @@ import androidx.compose.ui.unit.sp
 fun Compass(
     modifier: Modifier = Modifier,
     state: CompassState = rememberCompassState(),
-    degreeColor: Color = CompassDefaults.DegreeColor,
+    degreeColor: androidx.compose.ui.graphics.Color = CompassDefaults.DegreeColor,
     degreesStep: Int = CompassDefaults.DegreesStep,
-    needle: Painter? = null,
     showOrientationLabels: Boolean = CompassDefaults.ShowOrientationLabels,
-    orientationLabelsColor: Color = CompassDefaults.OrientationLabelsColor,
+    orientationLabelsColor: androidx.compose.ui.graphics.Color = CompassDefaults.OrientationLabelsColor,
     showDegreeValue: Boolean = CompassDefaults.ShowDegreeValue,
-    degreeValueColor: Color = CompassDefaults.DegreeValueColor,
+    degreeValueColor: androidx.compose.ui.graphics.Color = CompassDefaults.DegreeValueColor,
     showBorder: Boolean = CompassDefaults.ShowBorder,
-    borderColor: Color = CompassDefaults.BorderColor,
+    borderColor: androidx.compose.ui.graphics.Color = CompassDefaults.BorderColor,
     onSensorChanged: ((SensorEvent) -> Unit)? = null,
     onAccuracyChanged: ((Sensor, Int) -> Unit)? = null
 ) {
@@ -61,77 +59,42 @@ fun Compass(
         label = "compass_rotation"
     )
     
-    Box(
+    BoxWithConstraints(
         modifier = modifier.aspectRatio(1f),
         contentAlignment = Alignment.Center
     ) {
-        // Compass skeleton (background)
-        Canvas(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding((LocalDensity.current.run { (CompassDefaults.NeedlePadding * 100).dp }))
-        ) {
-            drawCompassSkeleton(
-                degreeColor = degreeColor,
-                degreesStep = degreesStep,
-                showOrientationLabels = showOrientationLabels,
-                orientationLabelsColor = orientationLabelsColor,
-                showBorder = showBorder,
-                borderColor = borderColor
-            )
-        }
+        val compassSize = minOf(maxWidth, maxHeight)
         
-        // Needle
-        Box(
+        CompassSkeleton(
+            modifier = Modifier.fillMaxSize(),
+            degreeColor = degreeColor,
+            degreesStep = degreesStep,
+            showOrientationLabels = showOrientationLabels,
+            orientationLabelsColor = orientationLabelsColor,
+            showBorder = showBorder,
+            borderColor = borderColor
+        )
+        
+        Image(
+            painter = painterResource(R.drawable.ic_needle),
+            contentDescription = "Compass Needle",
             modifier = Modifier
                 .fillMaxSize()
                 .graphicsLayer {
                     rotationZ = animatedRotation
                 },
-            contentAlignment = Alignment.Center
-        ) {
-            if (needle != null) {
-                androidx.compose.foundation.Image(
-                    painter = needle,
-                    contentDescription = "Compass Needle",
-                    modifier = Modifier.fillMaxSize()
-                )
-            } else {
-                // Default needle using Canvas
-                Canvas(modifier = Modifier.fillMaxSize()) {
-                    val centerX = size.width / 2
-                    val centerY = size.height / 2
-                    val needleLength = size.minDimension * 0.4f
-                    
-                    // Draw simple red needle pointing north
-                    drawLine(
-                        color = Color.Red,
-                        start = androidx.compose.ui.geometry.Offset(centerX, centerY),
-                        end = androidx.compose.ui.geometry.Offset(centerX, centerY - needleLength),
-                        strokeWidth = 4.dp.toPx()
-                    )
-                    
-                    // Draw white tail pointing south
-                    drawLine(
-                        color = Color.White,
-                        start = androidx.compose.ui.geometry.Offset(centerX, centerY),
-                        end = androidx.compose.ui.geometry.Offset(centerX, centerY + needleLength * 0.5f),
-                        strokeWidth = 4.dp.toPx()
-                    )
-                }
-            }
-        }
+            contentScale = ContentScale.Fit
+        )
         
-        // Degree value text
         if (showDegreeValue) {
             Text(
                 text = state.direction,
                 color = degreeValueColor,
-                fontSize = 14.sp,
+                fontSize = (compassSize.value * CompassDefaults.TextSizeFactor).sp,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .align(Alignment.Center)
-                    .padding(top = (LocalDensity.current.run { (CompassDefaults.DataPadding * 100).dp }))
+                    .offset(y = (compassSize.value * CompassDefaults.DataPadding).dp)
             )
         }
     }

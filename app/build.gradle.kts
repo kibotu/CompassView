@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
@@ -70,6 +71,13 @@ kotlin {
 dependencies {
     coreLibraryDesugaring(libs.desugar.jdk.libs)
     implementation(project(":compass"))
+    implementation(project(":compass-compose"))
+
+    implementation(platform(libs.compose.bom))
+    implementation(libs.compose.ui)
+    implementation(libs.compose.foundation)
+    implementation(libs.compose.material3)
+    implementation(libs.activity.compose)
 
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.material)

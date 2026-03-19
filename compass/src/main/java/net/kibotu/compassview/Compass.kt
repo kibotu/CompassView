@@ -18,7 +18,6 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
-import java.lang.Exception
 import java.text.DecimalFormat
 import kotlin.math.roundToInt
 
@@ -27,7 +26,9 @@ class Compass : RelativeLayout, SensorEventListener {
     private var needleImageView: ImageView? = null
     private var degreeTextView: TextView? = null
 
-    private var currentDegree = 0f
+    private var continuousDegree = 0f
+
+    private fun normalizeAngle(angle: Float): Float = ((angle % 360f) + 360f) % 360f
 
     private var showBorder = false
     private var borderColor = 0
@@ -50,6 +51,13 @@ class Compass : RelativeLayout, SensorEventListener {
     private var needle: Drawable? = null
 
     private var compassListener: CompassListener? = null
+
+    private var sensorManager: SensorManager? = null
+    private var rotationVectorSensor: Sensor? = null
+    private var magneticFieldSensor: Sensor? = null
+
+    private val rotationMatrix = FloatArray(9)
+    private val orientationAngles = FloatArray(3)
 
     constructor(context: Context) : super(context) {
         init(context, null)
@@ -78,16 +86,13 @@ class Compass : RelativeLayout, SensorEventListener {
     private fun init(context: Context, attrs: AttributeSet?) {
         LayoutInflater.from(context).inflate(R.layout.compass_layout, this, true)
 
-        val mSensorManager = getContext().getSystemService(Context.SENSOR_SERVICE) as SensorManager
-        mSensorManager.registerListener(
-            this,
-            mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION),
-            SensorManager.SENSOR_DELAY_GAME
-        )
+        sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        rotationVectorSensor = sensorManager?.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR)
+        magneticFieldSensor = sensorManager?.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)
 
         val typedArray = context.theme.obtainStyledAttributes(attrs, R.styleable.Compass, 0, 0)
 
-        if (typedArray != null) {
+        typedArray.let {
             showBorder =
                 typedArray.getBoolean(R.styleable.Compass_show_border, DEFAULT_SHOW_BORDER)
             borderColor =
@@ -116,7 +121,36 @@ class Compass : RelativeLayout, SensorEventListener {
         }
 
         updateLayout()
+
+        updateLayout()
         updateNeedle()
+    }
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        registerSensors()
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        unregisterSensors()
+    }
+
+    private fun registerSensors() {
+        rotationVectorSensor?.let { sensor ->
+            sensorManager?.let { sm ->
+                sm.registerListener(this, sensor, SensorManager.SENSOR_DELAY_FASTEST)
+            }
+        }
+        magneticFieldSensor?.let { sensor ->
+            sensorManager?.let { sm ->
+                sm.registerListener(this, sensor, SensorManager.SENSOR_DELAY_NORMAL)
+            }
+        }
+    }
+
+    private fun unregisterSensors() {
+        sensorManager?.unregisterListener(this)
     }
 
     private fun updateLayout() {
@@ -137,10 +171,10 @@ class Compass : RelativeLayout, SensorEventListener {
         compassSkeleton.setOrientationLabelsColor(orientationLabelsColor)
 
         val dataLayout = findViewById<View>(R.id.data_layout)
-        compassSkeleton.getViewTreeObserver()
+        compassSkeleton.viewTreeObserver
             .addOnGlobalLayoutListener(object : OnGlobalLayoutListener {
                 override fun onGlobalLayout() {
-                    compassSkeleton.getViewTreeObserver().removeOnGlobalLayoutListener(this)
+                    compassSkeleton.viewTreeObserver.removeOnGlobalLayoutListener(this)
                     val width = compassSkeleton.measuredWidth
                     val needlePadding = (width * NEEDLE_PADDING).toInt()
                     compassSkeleton.setPadding(
@@ -173,23 +207,89 @@ class Compass : RelativeLayout, SensorEventListener {
     override fun onSensorChanged(event: SensorEvent) {
         compassListener?.onSensorChanged(event)
 
-        val degree = event.values[0].roundToInt().toFloat()
+        when (event.sensor.type) {
+            Sensor.TYPE_ROTATION_VECTOR -> {
+                SensorManager.getRotationMatrixFromVector(rotationMatrix, event.values)
+                val displayRotation = getDisplayRotation()
+                remapRotationMatrix(displayRotation)
+                SensorManager.getOrientation(rotationMatrix, orientationAngles)
+                val azimuthInRadians = orientationAngles[0]
+                val azimuthInDegrees = Math.toDegrees(azimuthInRadians.toDouble()).toFloat()
 
-        val rotateAnimation = RotateAnimation(
-            currentDegree,
-            -degree,
-            Animation.RELATIVE_TO_SELF,
-            0.5f,
-            Animation.RELATIVE_TO_SELF,
-            0.5f
-        )
-        rotateAnimation.setDuration(210)
-        rotateAnimation.fillAfter = true
-        needleImageView?.startAnimation(rotateAnimation)
+                val newDegree = -azimuthInDegrees
+                val normalizedPrevious = normalizeAngle(continuousDegree)
+                val delta = newDegree - normalizedPrevious
+                val adjustedDelta = when {
+                    delta > 180 -> delta - 360
+                    delta < -180 -> delta + 360
+                    else -> delta
+                }
+                continuousDegree += adjustedDelta
 
-        updateTextDirection(currentDegree.toDouble())
+                needleImageView?.rotation = continuousDegree
 
-        currentDegree = -degree
+                updateTextDirection(continuousDegree.toDouble())
+            }
+            Sensor.TYPE_MAGNETIC_FIELD -> {
+                // Used for accuracy tracking only
+            }
+        }
+    }
+
+    private fun getDisplayRotation(): Int {
+        return try {
+            @Suppress("DEPRECATION")
+            val display = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+                context.display
+            } else {
+                (context.getSystemService(Context.WINDOW_SERVICE) as android.view.WindowManager).defaultDisplay
+            }
+            display?.rotation ?: 0
+        } catch (e: Exception) {
+            0
+        }
+    }
+
+    private fun remapRotationMatrix(displayRotation: Int) {
+        val remappedMatrix = FloatArray(9)
+        when (displayRotation) {
+            android.view.Surface.ROTATION_0 -> {
+                SensorManager.remapCoordinateSystem(
+                    rotationMatrix,
+                    SensorManager.AXIS_X,
+                    SensorManager.AXIS_Y,
+                    remappedMatrix
+                )
+            }
+            android.view.Surface.ROTATION_90 -> {
+                SensorManager.remapCoordinateSystem(
+                    rotationMatrix,
+                    SensorManager.AXIS_Y,
+                    SensorManager.AXIS_MINUS_X,
+                    remappedMatrix
+                )
+            }
+            android.view.Surface.ROTATION_180 -> {
+                SensorManager.remapCoordinateSystem(
+                    rotationMatrix,
+                    SensorManager.AXIS_MINUS_X,
+                    SensorManager.AXIS_MINUS_Y,
+                    remappedMatrix
+                )
+            }
+            android.view.Surface.ROTATION_270 -> {
+                SensorManager.remapCoordinateSystem(
+                    rotationMatrix,
+                    SensorManager.AXIS_MINUS_Y,
+                    SensorManager.AXIS_X,
+                    remappedMatrix
+                )
+            }
+            else -> {
+                System.arraycopy(rotationMatrix, 0, remappedMatrix, 0, 9)
+            }
+        }
+        System.arraycopy(remappedMatrix, 0, rotationMatrix, 0, 9)
     }
 
     override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {
@@ -197,19 +297,20 @@ class Compass : RelativeLayout, SensorEventListener {
     }
 
     private fun updateTextDirection(degree: Double) {
-        val deg = 360 + degree
+        val normalizedDegree = (degree + 360) % 360
         val decimalFormat = DecimalFormat("###.#")
-        var value: String?
-        if (deg > 0 && deg <= 90) {
-            value = String.format("%s%s NE", decimalFormat.format(-degree).toString(), DEGREE)
-        } else if (deg > 90 && deg <= 180) {
-            value = String.format("%s%s ES", decimalFormat.format(-degree).toString(), DEGREE)
-        } else if (deg > 180 && deg <= 270) {
-            value = String.format("%s%s SW", decimalFormat.format(-degree).toString(), DEGREE)
-        } else {
-            value = String.format("%s%s WN", decimalFormat.format(-degree).toString(), DEGREE)
+        val value = when {
+            normalizedDegree in 0.0..22.5 || normalizedDegree in 337.5..360.0 -> "N"
+            normalizedDegree in 22.5..67.5 -> "NE"
+            normalizedDegree in 67.5..112.5 -> "E"
+            normalizedDegree in 112.5..157.5 -> "SE"
+            normalizedDegree in 157.5..202.5 -> "S"
+            normalizedDegree in 202.5..247.5 -> "SW"
+            normalizedDegree in 247.5..292.5 -> "W"
+            normalizedDegree in 292.5..337.5 -> "NW"
+            else -> "N"
         }
-        degreeTextView?.text = value
+        degreeTextView?.text = "${decimalFormat.format(normalizedDegree)}$DEGREE $value"
     }
 
     fun setListener(compassListener: CompassListener?) {
@@ -229,4 +330,3 @@ class Compass : RelativeLayout, SensorEventListener {
         private const val DEFAULT_BORDER_COLOR = Color.BLACK
     }
 }
-

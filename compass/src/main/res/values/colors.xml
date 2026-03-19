@@ -1,12 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
-
-    <color name="blue">#026ebb</color>
-    <color name="red">#ee4353</color>
-
     <color name="compass_degree_color">#212121</color>
     <color name="compass_orientation_labels_color">#212121</color>
     <color name="compass_degree_value_color">#000000</color>

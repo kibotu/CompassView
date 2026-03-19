@@ -23,7 +23,7 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Build with Gradle
-        run: ./gradlew build --refresh-dependencies --s
+        run: ./gradlew build --refresh-dependencies --stacktrace
 
   publish:
     needs: build # Ensures that the 'publish' job runs after the 'build' job is successful
@@ -54,4 +54,4 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
       - name: Publish package to Maven Central Repository
-        run: ./gradlew publishToMavenCentral --no-configuration-cache --s -Pversion=$GITHUB_REF_NAME
+        run: ./gradlew publishToMavenCentral --no-configuration-cache --stacktrace -Pversion=$GITHUB_REF_NAME

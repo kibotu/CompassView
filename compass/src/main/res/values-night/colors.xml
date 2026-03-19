@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="compass_degree_color">#E0E0E0</color>
+    <color name="compass_orientation_labels_color">#E0E0E0</color>
+    <color name="compass_degree_value_color">#FFFFFF</color>
+    <color name="compass_border_color">#E0E0E0</color>
+</resources>

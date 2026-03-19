@@ -1,0 +1,50 @@
+[versions]
+# Core
+kotlin = "2.3.10"
+agp = "9.1.0"
+minSdk = "23"
+compileSdk = "36"
+targetSdk = "36"
+
+# AndroidX
+appcompat = "1.7.0"
+material = "1.12.0"
+constraintlayout = "2.2.0"
+core-ktx = "1.17.0"
+
+# Compose
+compose-bom = "2026.02.01"
+
+# Tools
+desugar = "2.1.5"
+
+# Publishing
+vanniktech-maven-publish = "0.36.0"
+
+[libraries]
+# AndroidX
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+androidx-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
+
+# Compose
+compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
+compose-ui = { group = "androidx.compose.ui", name = "ui" }
+compose-foundation = { group = "androidx.compose.foundation", name = "foundation" }
+compose-material3 = { group = "androidx.compose.material3", name = "material3" }
+compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+
+# Tools
+desugar-jdk-libs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugar" }
+
+# Kotlin
+kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+android-library = { id = "com.android.library", version.ref = "agp" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+vanniktech-maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "vanniktech-maven-publish" }

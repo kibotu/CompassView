@@ -1,6 +1,7 @@
 package net.kibotu.compassview.demo
 
 import android.content.res.Configuration
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,12 +10,20 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.LightMode
+import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -23,7 +32,9 @@ import net.kibotu.compassview.Compass
 import net.kibotu.compassview.compose.Compass as ComposeCompass
 
 @Composable
-fun CompassDemoScreen() {
+fun CompassDemoScreen(
+    onToggleTheme: () -> Unit
+) {
     val configuration = LocalConfiguration.current
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
@@ -31,7 +42,7 @@ fun CompassDemoScreen() {
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
-            .systemBarsPadding()
+            .statusBarsPadding()
     ) {
         if (isLandscape) {
             Row(
@@ -64,7 +75,42 @@ fun CompassDemoScreen() {
                 )
             }
         }
+
+        ThemeToggleButton(
+            onClick = onToggleTheme,
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .size(48.dp)
+        )
     }
+}
+
+@Composable
+private fun ThemeToggleButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val isDarkTheme = MaterialTheme.colorScheme.background.luminance() < 0.5f
+    
+    IconButton(
+        onClick = onClick,
+        modifier = modifier
+            .clip(CircleShape)
+            .background(MaterialTheme.colorScheme.surfaceVariant)
+    ) {
+        Icon(
+            imageVector = if (isDarkTheme) Icons.Filled.LightMode else Icons.Filled.DarkMode,
+            contentDescription = "Toggle theme",
+            tint = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
+}
+
+private fun androidx.compose.ui.graphics.Color.luminance(): Float {
+    val r = red
+    val g = green
+    val b = blue
+    return 0.299f * r + 0.587f * g + 0.114f * b
 }
 
 @Composable

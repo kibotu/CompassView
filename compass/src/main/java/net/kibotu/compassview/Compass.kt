@@ -98,18 +98,24 @@ class Compass : RelativeLayout, SensorEventListener {
             borderColor =
                 typedArray.getColor(R.styleable.Compass_border_color, DEFAULT_BORDER_COLOR)
 
-            degreesColor = typedArray.getColor(R.styleable.Compass_degree_color, Color.BLACK)
+            degreesColor = typedArray.getColor(
+                R.styleable.Compass_degree_color,
+                context.getColor(R.color.compass_degree_color)
+            )
             showOrientationLabels = typedArray.getBoolean(
                 R.styleable.Compass_show_orientation_labels,
                 DEFAULT_SHOW_ORIENTATION_LABEL
             )
             orientationLabelsColor = typedArray.getColor(
                 R.styleable.Compass_orientation_labels_color,
-                DEFAULT_ORIENTATION_LABEL_COLOR
+                context.getColor(R.color.compass_orientation_labels_color)
             )
 
             degreeValueColor =
-                typedArray.getColor(R.styleable.Compass_degree_value_color, Color.BLACK)
+                typedArray.getColor(
+                    R.styleable.Compass_degree_value_color,
+                    context.getColor(R.color.compass_degree_value_color)
+                )
             showDegreeValue = typedArray.getBoolean(
                 R.styleable.Compass_show_degree_value,
                 DEFAULT_SHOW_DEGREE_VALUE
@@ -119,8 +125,6 @@ class Compass : RelativeLayout, SensorEventListener {
             needle = typedArray.getDrawable(R.styleable.Compass_needle)
             typedArray.recycle()
         }
-
-        updateLayout()
 
         updateLayout()
         updateNeedle()

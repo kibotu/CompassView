@@ -10,11 +10,13 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -43,14 +45,14 @@ import androidx.compose.ui.unit.sp
 fun Compass(
     modifier: Modifier = Modifier,
     state: CompassState = rememberCompassState(),
-    degreeColor: androidx.compose.ui.graphics.Color = CompassDefaults.DegreeColor,
+    degreeColor: Color = MaterialTheme.colorScheme.onSurface,
     degreesStep: Int = CompassDefaults.DegreesStep,
     showOrientationLabels: Boolean = CompassDefaults.ShowOrientationLabels,
-    orientationLabelsColor: androidx.compose.ui.graphics.Color = CompassDefaults.OrientationLabelsColor,
+    orientationLabelsColor: Color = MaterialTheme.colorScheme.onSurface,
     showDegreeValue: Boolean = CompassDefaults.ShowDegreeValue,
-    degreeValueColor: androidx.compose.ui.graphics.Color = CompassDefaults.DegreeValueColor,
+    degreeValueColor: Color = MaterialTheme.colorScheme.onSurface,
     showBorder: Boolean = CompassDefaults.ShowBorder,
-    borderColor: androidx.compose.ui.graphics.Color = CompassDefaults.BorderColor,
+    borderColor: Color = MaterialTheme.colorScheme.onSurface,
     onSensorChanged: ((SensorEvent) -> Unit)? = null,
     onAccuracyChanged: ((Sensor, Int) -> Unit)? = null
 ) {
@@ -80,6 +82,7 @@ fun Compass(
             contentDescription = "Compass Needle",
             modifier = Modifier
                 .fillMaxSize()
+                .padding(64.dp)
                 .graphicsLayer {
                     rotationZ = animatedRotation
                 },

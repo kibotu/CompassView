@@ -19,12 +19,12 @@ internal class CompassSkeleton : RelativeLayout {
     private var centerX = 0
     private var centerY = 0
 
-    private var degreesColor = DEGREES_COLOR
+    private var degreesColor: Int = 0
     private var showOrientationLabel = SHOW_ORIENTATION_LABEL
     private var degreesStep = DEFAULT_DEGREES_STEP
-    private var orientationLabelsColor = DEFAULT_ORIENTATION_LABELS_COLOR
+    private var orientationLabelsColor: Int = 0
     private var showBorder = DEFAULT_SHOW_BORDER
-    private var borderColor = DEFAULT_BORDER_COLOR
+    private var borderColor: Int = 0
 
     /**
      * @param context
@@ -60,6 +60,9 @@ internal class CompassSkeleton : RelativeLayout {
      */
     private fun init(context: Context?, attrs: AttributeSet?) {
         Log.d("TAG", "init function")
+        degreesColor = context?.getColor(R.color.compass_degree_color) ?: Color.BLACK
+        orientationLabelsColor = context?.getColor(R.color.compass_orientation_labels_color) ?: Color.BLACK
+        borderColor = context?.getColor(R.color.compass_border_color) ?: Color.BLACK
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -251,17 +254,14 @@ internal class CompassSkeleton : RelativeLayout {
     }
 
     companion object {
-        private val DEGREES_COLOR = Color.BLACK
         private const val SHOW_ORIENTATION_LABEL = false
         private const val DEFAULT_DEGREES_STEP = 15
-        private val DEFAULT_BORDER_COLOR = Color.BLACK
+        private const val DEFAULT_MINIMIZED_ALPHA = 180
+        private const val DEFAULT_SHOW_BORDER = false
 
         private const val EAST_INDEX = "E"
         private const val NORTH_INDEX = "N"
         private const val WEST_INDEX = "W"
         private const val SOUTH_INDEX = "S"
-        private const val DEFAULT_MINIMIZED_ALPHA = 180
-        private val DEFAULT_ORIENTATION_LABELS_COLOR = Color.BLACK
-        private const val DEFAULT_SHOW_BORDER = false
     }
 }

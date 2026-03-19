@@ -8,8 +8,16 @@
     android:padding="20dp"
     tools:context=".MainActivity">
 
-    <net.kibotu.compassview.Compass
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:padding="32dp">
+
+        <net.kibotu.compassview.Compass
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center" />
+
+    </FrameLayout>
 
 </LinearLayout>
